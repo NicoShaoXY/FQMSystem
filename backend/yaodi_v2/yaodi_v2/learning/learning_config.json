@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "minSamples": 100,
+  "decayWindow": 60,
+  "lookbackDays": 20,
+  "weightChangeCap": 0.2,
+  "autoRetrainThreshold": 0.15,
+  "lastRetrainAt": null,
+  "factorWeights": {
+    "value": 1,
+    "quality": 1,
+    "growth": 1,
+    "momentum": 1,
+    "size": 0.5
+  },
+  "factorDecays": {},
+  "totalSignals": 123674,
+  "totalUpdated": 1973
+}

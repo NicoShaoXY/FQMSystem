@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FQMSystem_尧帝智能版</title>
+    <script>
+    // 强制覆盖ss-page的内联display:none（使用setProperty覆盖!important的inline style）
+    (function() {
+      var css = '.ss-page[style*="display:none"]{display:flex!important}';
+      var styleEl = document.createElement('style');
+      styleEl.textContent = css;
+      document.head.appendChild(styleEl);
+      
+      // 用requestAnimationFrame持续监控
+      function forceShow() {
+        document.querySelectorAll('.ss-page').forEach(function(el) {
+          var s = el.style;
+          if (s.display === 'none' || s.getPropertyValue('display') === 'none') {
+            s.setProperty('display', 'flex', 'important');
+          }
+        });
+      }
+      
+      // 多次尝试确保覆盖
+      var attempts = 0;
+      var interval = setInterval(function() {
+        forceShow();
+        attempts++;
+        if (attempts >= 20) clearInterval(interval);
+      }, 100);
+      
+      // 也用MutationObserver
+      if (document.body) {
+        var obs = new MutationObserver(forceShow);
+        obs.observe(document.body, { attributes: true, attributeFilter: ['style'], subtree: true });
+      }
+    })();
+  </script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+[
+  {
+    "id": "pattern_1775632574073",
+    "name": "创建一个趋势跟踪交易策略",
+    "keywords": [
+      "创建一个趋势跟踪交易策略"
+    ],
+    "template": "// 交易策略 - 趋势策略\nclass TrendStrategy {\n  constructor(config = {}) {\n    this.config = {\n      stopLoss: config.stopLoss || 0.05,      // 止损比例\n      takeProfit: config.takeProfit || 0.1,   // 止盈比例\n      maxPosition: config.maxPosition || 0.3,  // 最大仓位\n      ...config\n    };\n    this.positions = new Map();\n  }\n  \n  /**\n   * 分析市场信号\n   */\n  analyzeSignal(marketData) {\n    const { price, volume, ma5, ma20, rsi } = marketData;\n    \n    const signals = {\n      buy: false,\n      sell: false,\n      strength: 0,\n      reasons: []\n    };\n    \n    // 均线交叉\n    if (ma5 > ma20) {\n      signals.buy = true;\n      signals.reasons.push('MA5上穿MA20');\n      signals.strength += 30;\n    } else if (ma5 < ma20) {\n      signals.sell = true;\n      signals.reasons.push('MA5下穿MA20');\n      signals.strength += 30;\n    }\n    \n    // RSI指标\n    if (rsi < 30) {\n      signals.buy = true;\n      signals.reasons.push('RSI超卖');\n      signals.strength += 20;\n    } else if (rsi > 70) {\n      signals.sell = true;\n      signals.reasons.push('RSI超买');\n      signals.strength += 20;\n    }\n    \n    // TODO: 添加自定义策略逻辑\n    \n    return signals;\n  }\n  \n  /**\n   * 计算仓位\n   */\n  calculatePosition(capital, price, risk) {\n    const riskAmount = capital * risk;\n    const position = Math.min(riskAmount / price, this.config.maxPosition * capital / price);\n    return Math.floor(position);\n  }\n  \n  /**\n   * 检查止损止盈\n   */\n  checkStopLossTakeProfit(position, currentPrice) {\n    const pnl = (currentPrice - position.entryPrice) / position.entryPrice;\n    \n    if (pnl <= -this.config.stopLoss) {\n      return { action: 'stop_loss', pnl };\n    }\n    if (pnl >= this.config.takeProfit) {\n      return { action: 'take_profit', pnl };\n    }\n    \n    return { action: 'hold', pnl };\n  }\n}",
+    "confidence": 0.75,
+    "count": 1,
+    "createdAt": "2026-04-08T07:16:14.073Z"
+  }
+]

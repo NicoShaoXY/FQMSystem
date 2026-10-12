@@ -1,0 +1,9 @@
+{
+  "autoTrain": true,
+  "startDelayMs": 60000,
+  "modelsToAutoTrain": [
+    "xgboost",
+    "lightgbm",
+    "randomforest"
+  ]
+}

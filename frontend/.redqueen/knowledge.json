@@ -1,0 +1,11 @@
+{
+  "test_memory": {
+    "key": "test_memory",
+    "value": "红后系统测试记忆",
+    "tags": [
+      "test"
+    ],
+    "timestamp": "2026-04-08T05:04:36.700Z",
+    "accessCount": 0
+  }
+}

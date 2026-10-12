@@ -1,0 +1,52 @@
+
+  // ═════════════════════════════════════════════════════════════
+  // 深交所行情 API
+  // GET /api/shenzhen - 获取深交所股票行情
+  // ═════════════════════════════════════════════════════════════
+  } else if (req.url === '/api/shenzhen' && req.method === 'GET') {
+    try {
+      const stocks = db.prepare(`
+        SELECT s.code, s.name, sr.price, sr.change_percent, sr.volume, sr.amount
+        FROM stock_realtime sr
+        JOIN stocks s ON s.code = sr.code
+        WHERE s.code LIKE '000%' OR s.code LIKE '001%' OR s.code LIKE '002%' OR s.code LIKE '003%'
+        ORDER BY sr.change_percent DESC
+        LIMIT 100
+      `).all();
+      
+      res.end(JSON.stringify({
+        success: true,
+        exchange: 'shenzhen',
+        count: stocks.length,
+        stocks
+      }));
+    } catch (e) {
+      res.end(JSON.stringify({ success: false, error: e.message }));
+    }
+  }
+
+  // ═════════════════════════════════════════════════════════════
+  // 上交所行情 API
+  // GET /api/shanghai - 获取上交所股票行情
+  // ═════════════════════════════════════════════════════════════
+  } else if (req.url === '/api/shanghai' && req.method === 'GET') {
+    try {
+      const stocks = db.prepare(`
+        SELECT s.code, s.name, sr.price, sr.change_percent, sr.volume, sr.amount
+        FROM stock_realtime sr
+        JOIN stocks s ON s.code = sr.code
+        WHERE s.code LIKE '600%' OR s.code LIKE '601%' OR s.code LIKE '603%' OR s.code LIKE '688%'
+        ORDER BY sr.change_percent DESC
+        LIMIT 100
+      `).all();
+      
+      res.end(JSON.stringify({
+        success: true,
+        exchange: 'shanghai',
+        count: stocks.length,
+        stocks
+      }));
+    } catch (e) {
+      res.end(JSON.stringify({ success: false, error: e.message }));
+    }
+  }

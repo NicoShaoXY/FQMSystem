@@ -1,0 +1,81 @@
+{
+  "isRunning": true,
+  "version": "1.0.0",
+  "lastCheck": "2026-05-09T16:37:04.000+08:00",
+  "lastEvolution": "2026-05-09T16:37:04.000+08:00",
+  "evolutionCount": 106255,
+  "successCount": 1,
+  "failCount": 0,
+  "rollbackCount": 1,
+  "activeModifications": [
+    {
+      "id": "d68b18d2a4b8c3e8",
+      "timestamp": "2026-04-08T00:03:03.240Z",
+      "targetFile": "/Users/shao/Desktop/个人/FQMSystem_尧帝智能版/test_evolution.js",
+      "reason": "测试自我演化引擎修改功能",
+      "changes": [
+        {
+          "type": "replace",
+          "search": "原始内容",
+          "replace": "修改后的内容"
+        }
+      ],
+      "backupPath": "/Users/shao/Desktop/个人/FQMSystem_尧帝智能版/.evolution/backups/test_evolution.js.2026-04-08T00-03-03-237Z.bak",
+      "beforeHash": "1ab5a983452f3d4494e8d4b4b976816f8eb74ca95cbdbc819ebc2e12ae8a0bac",
+      "afterHash": "be8b0775d3a0412dcc2b9158c8fb38d9a693c2c97692d46fa31ad8ec72ea5649",
+      "validated": true,
+      "status": "rolled_back",
+      "validationResult": {
+        "syntax": {
+          "valid": true
+        },
+        "functional": {
+          "passed": true
+        },
+        "performance": {
+          "passed": true,
+          "responseTime": 143
+        }
+      }
+    },
+    {
+      "id": "local_1775633009638",
+      "type": "add_feature",
+      "source": "local_ai",
+      "requirement": "创建一个数据缓存系统",
+      "code": "// 缓存管理 - 通用缓存\nclass Cache {\n  constructor(maxSize = 1000, ttl = 3600000) {\n    this.cache = new Map();\n    this.maxSize = maxSize;\n    this.ttl = ttl; // 默认缓存时间(毫秒)\n    this.hits = 0;\n    this.misses = 0;\n  }\n  \n  /**\n   * 获取缓存\n   */\n  get(key) {\n    const item = this.cache.get(key);\n    \n    if (!item) {\n      this.misses++;\n      return null;\n    }\n    \n    // 检查是否过期\n    if (Date.now() > item.expiry) {\n      this.cache.delete(key);\n      this.misses++;\n      return null;\n    }\n    \n    this.hits++;\n    return item.value;\n  }\n  \n  /**\n   * 设置缓存\n   */\n  set(key, value, customTtl) {\n    // 如果超过最大大小，删除最旧的\n    if (this.cache.size >= this.maxSize) {\n      const oldestKey = this.cache.keys().next().value;\n      this.cache.delete(oldestKey);\n    }\n    \n    this.cache.set(key, {\n      value,\n      expiry: Date.now() + (customTtl || this.ttl)\n    });\n  }\n  \n  /**\n   * 删除缓存\n   */\n  delete(key) {\n    return this.cache.delete(key);\n  }\n  \n  /**\n   * 清空缓存\n   */\n  clear() {\n    this.cache.clear();\n    this.hits = 0;\n    this.misses = 0;\n  }\n  \n  /**\n   * 获取缓存统计\n   */\n  getStats() {\n    const total = this.hits + this.misses;\n    return {\n      size: this.cache.size,\n      maxSize: this.maxSize,\n      hits: this.hits,\n      misses: this.misses,\n      hitRate: total > 0 ? (this.hits / total * 100).toFixed(2) + '%' : 'N/A'\n    };\n  }\n}",
+      "confidence": 0.85,
+      "status": "generated",
+      "createdAt": "2026-04-08T07:23:29.638Z"
+    },
+    {
+      "id": "local_1775633015520",
+      "type": "add_feature",
+      "source": "local_ai",
+      "requirement": "创建一个数据缓存系统",
+      "code": "// 缓存管理 - 通用缓存\nclass Cache {\n  constructor(maxSize = 1000, ttl = 3600000) {\n    this.cache = new Map();\n    this.maxSize = maxSize;\n    this.ttl = ttl; // 默认缓存时间(毫秒)\n    this.hits = 0;\n    this.misses = 0;\n  }\n  \n  /**\n   * 获取缓存\n   */\n  get(key) {\n    const item = this.cache.get(key);\n    \n    if (!item) {\n      this.misses++;\n      return null;\n    }\n    \n    // 检查是否过期\n    if (Date.now() > item.expiry) {\n      this.cache.delete(key);\n      this.misses++;\n      return null;\n    }\n    \n    this.hits++;\n    return item.value;\n  }\n  \n  /**\n   * 设置缓存\n   */\n  set(key, value, customTtl) {\n    // 如果超过最大大小，删除最旧的\n    if (this.cache.size >= this.maxSize) {\n      const oldestKey = this.cache.keys().next().value;\n      this.cache.delete(oldestKey);\n    }\n    \n    this.cache.set(key, {\n      value,\n      expiry: Date.now() + (customTtl || this.ttl)\n    });\n  }\n  \n  /**\n   * 删除缓存\n   */\n  delete(key) {\n    return this.cache.delete(key);\n  }\n  \n  /**\n   * 清空缓存\n   */\n  clear() {\n    this.cache.clear();\n    this.hits = 0;\n    this.misses = 0;\n  }\n  \n  /**\n   * 获取缓存统计\n   */\n  getStats() {\n    const total = this.hits + this.misses;\n    return {\n      size: this.cache.size,\n      maxSize: this.maxSize,\n      hits: this.hits,\n      misses: this.misses,\n      hitRate: total > 0 ? (this.hits / total * 100).toFixed(2) + '%' : 'N/A'\n    };\n  }\n}",
+      "confidence": 0.85,
+      "status": "generated",
+      "createdAt": "2026-04-08T07:23:35.520Z"
+    }
+  ],
+  "pendingValidations": [],
+  "errors": [],
+  "metrics": {
+    "accuracy": 89.3,
+    "winRate": 86.5,
+    "profitRate": 0.0091,
+    "errorRate": 0.01,
+    "performanceScore": 0,
+    "evolutionCount": 106254,
+    "totalTrades": 0,
+    "activeBranches": 0
+  },
+  "constraints": {
+    "maxModificationsPerDay": 10,
+    "requireValidation": true,
+    "autoRollbackOnFailure": true,
+    "minAccuracyThreshold": 50,
+    "maxErrorRate": 0.1
+  }
+}

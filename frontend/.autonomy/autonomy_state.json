@@ -1,0 +1,169 @@
+{
+  "mode": "autonomous",
+  "isAutonomous": true,
+  "emergencyStop": false,
+  "emergencyStopReason": null,
+  "emergencyStopTime": null,
+  "stats": {
+    "totalTrades": 0,
+    "totalProfit": 0,
+    "totalLoss": 0,
+    "winRate": 0,
+    "currentDrawdown": 0,
+    "consecutiveLosses": 0,
+    "modificationsToday": 0,
+    "lastResetDate": "2026-04-30"
+  },
+  "decisions": [
+    {
+      "timestamp": "2026-04-09T09:06:54.264Z",
+      "action": "code_modification",
+      "details": {
+        "id": "1775725614263_fsk78p",
+        "timestamp": "2026-04-09T09:06:54.263Z",
+        "severity": "P1_HIGH",
+        "type": "memory_optimization",
+        "file": "server/data_server.js",
+        "description": "降低内存上限从1GB到500MB，适应8GB小内存系统",
+        "oldCode": null,
+        "newCode": null,
+        "status": "FIXED",
+        "impact": "",
+        "autoFixed": true
+      }
+    },
+    {
+      "timestamp": "2026-04-09T09:06:54.422Z",
+      "action": "code_modification",
+      "details": {
+        "id": "1775725614422_zq5wfm",
+        "timestamp": "2026-04-09T09:06:54.422Z",
+        "severity": "P2_MEDIUM",
+        "type": "performance",
+        "file": "server/data_server.js",
+        "description": "红后扫描频率从10秒调整为30秒，完整扫描从60秒调整为3分钟",
+        "oldCode": null,
+        "newCode": null,
+        "status": "FIXED",
+        "impact": "",
+        "autoFixed": false
+      }
+    },
+    {
+      "timestamp": "2026-04-09T09:06:54.487Z",
+      "action": "code_modification",
+      "details": {
+        "id": "1775725614487_mxmdvb",
+        "timestamp": "2026-04-09T09:06:54.487Z",
+        "severity": "P1_HIGH",
+        "type": "safety",
+        "file": "server/data_server.js",
+        "description": "禁用红后自动修复功能，防止语法错误累积",
+        "oldCode": null,
+        "newCode": null,
+        "status": "FIXED",
+        "impact": "",
+        "autoFixed": true
+      }
+    },
+    {
+      "timestamp": "2026-04-09T09:06:54.548Z",
+      "action": "code_modification",
+      "details": {
+        "id": "1775725614547_v79qm7",
+        "timestamp": "2026-04-09T09:06:54.547Z",
+        "severity": "P1_HIGH",
+        "type": "bug_fix",
+        "file": "server/data_server.js",
+        "description": "修复BUG扫描误报：过滤东方财富新闻404、DNS超时等非关键错误",
+        "oldCode": null,
+        "newCode": null,
+        "status": "FIXED",
+        "impact": "",
+        "autoFixed": true
+      }
+    },
+    {
+      "timestamp": "2026-04-30T08:12:06.000+08:00",
+      "action": "emergency_stop",
+      "details": {
+        "reason": "手动触发",
+        "time": "2026-04-30T08:12:06.000+08:00"
+      }
+    },
+    {
+      "timestamp": "2026-04-30T09:07:04.000+08:00",
+      "action": "clear_emergency",
+      "details": {}
+    }
+  ],
+  "codeModificationHistory": [
+    {
+      "id": "1775725614607_uqhpio",
+      "timestamp": "2026-04-09T09:06:54.607Z",
+      "severity": "FEATURE",
+      "type": "feature",
+      "file": "server/data_server.js",
+      "description": "红后immediateFix函数添加代码修改历史记录功能",
+      "oldCode": null,
+      "newCode": null,
+      "status": "FIXED",
+      "impact": "",
+      "autoFixed": false
+    },
+    {
+      "id": "1775725614547_v79qm7",
+      "timestamp": "2026-04-09T09:06:54.547Z",
+      "severity": "P1_HIGH",
+      "type": "bug_fix",
+      "file": "server/data_server.js",
+      "description": "修复BUG扫描误报：过滤东方财富新闻404、DNS超时等非关键错误",
+      "oldCode": null,
+      "newCode": null,
+      "status": "FIXED",
+      "impact": "",
+      "autoFixed": true
+    },
+    {
+      "id": "1775725614487_mxmdvb",
+      "timestamp": "2026-04-09T09:06:54.487Z",
+      "severity": "P1_HIGH",
+      "type": "safety",
+      "file": "server/data_server.js",
+      "description": "禁用红后自动修复功能，防止语法错误累积",
+      "oldCode": null,
+      "newCode": null,
+      "status": "FIXED",
+      "impact": "",
+      "autoFixed": true
+    },
+    {
+      "id": "1775725614422_zq5wfm",
+      "timestamp": "2026-04-09T09:06:54.422Z",
+      "severity": "P2_MEDIUM",
+      "type": "performance",
+      "file": "server/data_server.js",
+      "description": "红后扫描频率从10秒调整为30秒，完整扫描从60秒调整为3分钟",
+      "oldCode": null,
+      "newCode": null,
+      "status": "FIXED",
+      "impact": "",
+      "autoFixed": false
+    },
+    {
+      "id": "1775725614263_fsk78p",
+      "timestamp": "2026-04-09T09:06:54.263Z",
+      "severity": "P1_HIGH",
+      "type": "memory_optimization",
+      "file": "server/data_server.js",
+      "description": "降低内存上限从1GB到500MB，适应8GB小内存系统",
+      "oldCode": null,
+      "newCode": null,
+      "status": "FIXED",
+      "impact": "",
+      "autoFixed": true
+    }
+  ],
+  "lastUpdate": "2026-04-30T09:07:14.000+08:00",
+  "lastHeartbeat": null
+}

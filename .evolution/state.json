@@ -1,0 +1,51 @@
+{
+  "isRunning": true,
+  "version": "1.0.0",
+  "lastCheck": "2026-05-30T10:16:39.000+08:00",
+  "lastEvolution": "2026-05-30T10:16:39.000+08:00",
+  "evolutionCount": 10529,
+  "successCount": 0,
+  "failCount": 0,
+  "rollbackCount": 0,
+  "activeModifications": [],
+  "pendingValidations": [],
+  "errors": [],
+  "metrics": {
+    "accuracy": 57.6,
+    "winRate": 44.6,
+    "profitRate": -652.78,
+    "errorRate": 0,
+    "performanceScore": 0,
+    "evolutionCount": 10528,
+    "totalTrades": 0,
+    "activeBranches": 0
+  },
+  "constraints": {
+    "maxModificationsPerDay": null,
+    "requireValidation": true,
+    "autoRollbackOnFailure": true,
+    "autoFixLowRisk": true,
+    "autoFixMediumRisk": true,
+    "autoFixHighRisk": false,
+    "minAccuracyThreshold": 50,
+    "maxErrorRate": 0.1,
+    "riskPriority": {
+      "critical": {
+        "autoFix": true,
+        "immediate": true
+      },
+      "high": {
+        "autoFix": false,
+        "immediate": true
+      },
+      "medium": {
+        "autoFix": true,
+        "immediate": false
+      },
+      "low": {
+        "autoFix": true,
+        "immediate": false
+      }
+    }
+  }
+}

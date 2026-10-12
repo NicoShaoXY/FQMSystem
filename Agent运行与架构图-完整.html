@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>FQMSystem Agent 架构图</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0d1117; color: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 32px; }
+  h1 { text-align: center; font-size: 20px; color: #58a6ff; margin-bottom: 8px; }
+  p.sub { text-align: center; color: #8b949e; font-size: 13px; margin-bottom: 28px; }
+  .diagram-section { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 24px; margin-bottom: 32px; }
+  .diagram-title { font-size: 15px; font-weight: 600; color: #f0f6fc; margin-bottom: 4px; }
+  .diagram-desc { font-size: 12px; color: #8b949e; margin-bottom: 20px; }
+  .mermaid { display: flex; justify-content: center; background: #0d1117; border-radius: 8px; padding: 20px; }
+</style>
+</head>
+<body>
+
+<h1>FQMSystem Agent 架构图</h1>
+<p class="sub">尧帝智能版 · 2026 · 4大引擎协作体系</p>
+
+<!-- 图1: Agent 协作运行逻辑 -->
+<div class="diagram-section">
+  <div class="diagram-title">图1 · Agent 运行逻辑（数据流与协作时序）</div>
+  <div class="diagram-desc">描述各 Agent 之间如何通过信号、事件、数据库进行协作，以及幻觉检测与纠错机制</div>
+  <div class="mermaid">
+sequenceDiagram
+    participant Scheduler as 中央调度器<br/>(Scheduler)
+    participant L1 as 尧帝L1引擎<br/>(海选引擎)
+    participant L2 as 尧帝L2引擎<br/>(精排引擎)
+    participant L3 as 尧帝L3引擎<br/>(风控引擎)
+    participant Shundi as 舜帝引擎<br/>(执行引擎)
+    participant ML as ML调度器<br/>(模型训练)
+    participant Evolve as 演化引擎<br/>(自演化)
+    participant DB as SQLite DB<br/>(共享数据库)
+    participant Monitor as 资源监控器<br/>(CPU负载)
+
+    rect rgba(88,166,255,0.08)
+    Note over Scheduler,DB: 非交易时段（9:00前 / 11:30-13:00 / 15:00后）
+    Scheduler->>ML: 每5分钟检查训练队列
+    ML->>Monitor: 查询CPU负载
+    Monitor-->>ML: 负载评分 0-100
+    alt 负载 < 50%
+        ML->>ML: 启动Worker线程训练
+        ML->>DB: 更新 ai_ml_model 表
+        Evolve->>Evolve: 分支杂交/竞争淘汰
+    else 负载 50-80%
+        ML->>ML: 降速训练，少量模型
+    else 负载 > 80%
+        ML->>ML: 暂停训练，演化优先
+    end
+    end
+
+    rect rgba(255,215,0,0.06)
+    Note over Scheduler,DB: 交易时段（9:30-11:30 / 13:00-15:00）
+    Scheduler->>L1: 每5分钟触发 L1.run()
+    L1->>DB: 读取全市场股票（~5800只）
+    L1->>L1: 计算20维特征（动量/波动/资金流等）
+    L1->>DB: 写入 yaodi_l1_cache（top300）
+    L1-->>Scheduler: L1完成
+
+    Scheduler->>L2: 触发 L2.run(L1结果)
+    L2->>DB: 读取 yaodi_l1_cache（top300）
+    L2->>L2: 调用16个ML模型集成预测
+    L2->>DB: 读取 yaodi_l2_cache（top50）
+    L2-->>Scheduler: L2完成
+
+    Scheduler->>+L3: 触发 L3.run(L2结果)
+    L3->>DB: 读取 yaodi_l3_signals（已有）
+    L3->>L3: 合规过滤（停牌/ST/格局风控）
+    L3->>L3: Kelly仓位计算 + 熔断检查
+    L3->>DB: 写入 yaodi_l3_signals
+    L3-->>-Scheduler: L3完成
+    end
+
+    Scheduler->>+Shundi: 每分钟检查尧帝信号
+    Shundi->>DB: 读取 yaodi_l3_signals（buy状态）
+    Shundi->>DB: 读取 shundi_mock_holdings（持仓）
+    Shundi->>Shundi: ATR/MA20/趋势共振判断
+    Shundi->>DB: 执行买入/卖出交易
+    Shundi-->>-Scheduler: 舜帝决策完成
+
+    Note over Shundi,DB: 幻觉检测：舜帝收到尧帝信号后，<br/>用自身策略二次验证（RSI/MACD/格局识别），<br/>低于40%置信度信号直接过滤，不执行交易
+
+    rect rgba(255,100,100,0.06)
+    Note over Shundi,DB: 幻觉纠错机制
+    Shundi->>Shundi: 二次验证失败 → 降权/拒绝买入
+    Shundi->>Shundi: 持仓亏损>8% → 止损止损出局
+    Shundi->>DB: 写入 shundi_mock_trades（带纠错日志）
+    ML->>ML: 高胜率特征 → 权重提升20%
+    ML->>ML: 低胜率特征 → 权重降低50%
+    end
+
+    Scheduler->>Monitor: 每30秒检查CPU负载
+    Monitor-->>Scheduler: 负载状态（正常/平衡/节能）
+    alt 负载突变
+        Scheduler->>ML: 暂停训练
+        Scheduler->>Evolve: 暂停演化
+    end
+</div>
+</div>
+
+<!-- 图2: 系统整体架构 -->
+<div class="diagram-section">
+  <div class="diagram-title">图2 · 系统整体架构（模块分层与技术栈）</div>
+  <div class="diagram-desc">展示前端、后端、数据库、ML引擎、数据源的整体分层架构</div>
+  <div class="mermaid">
+flowchart TB
+    subgraph Frontend["前端层 · React + Vite (Port 5174)"]
+        F1["📊 持仓页面<br/>Holding.jsx"]
+        F2["🎯 智能选股<br/>StockSelection.jsx"]
+        F3["🧠 模型训练<br/>ModelTraining.jsx"]
+        F4["🛡️ 风控面板<br/>RedQueen.jsx"]
+        F5["📈 市场概览<br/>MarketOverview.jsx"]
+    end
+
+    subgraph Backend["后端层 · Node.js (Port 8769)"]
+        subgraph Engine["四大引擎"]
+            Y["🦌 尧帝引擎<br/>yaodi_v2_core.js<br/>(L1/L2/L3三层选股)"]
+            S["👑 舜帝引擎<br/>shundi_engine.js<br/>(交易执行+做T)"]
+            M["🤖 ML调度器<br/>yaodi_ml_trainer.js<br/>(16模型训练+Worker)"]
+            E["🔄 演化引擎<br/>yaodi_brain.js<br/>(分支杂交/竞争淘汰)"]
+        end
+
+        subgraph Scheduler["中央调度器"]
+            CS["⚙️ 中央调度器<br/>(CPU负载监控·4模式切换)"]
+            DS["⏰ 数据定时采集<br/>(全球市场/资金流/研报)"]
+        end
+
+        subgraph DataLayer["数据层"]
+            API["🌐 数据源适配器<br/>(东方财富/腾讯/新浪)"]
+            VALIDATE["✅ 数据校验<br/>(停牌过滤/ST过滤/零价剔除)"]
+        end
+
+        subgraph WorkerLayer["并发层"]
+            W1["🧵 Worker线程池<br/>(XGBoost/LightGBM/LSTM等)"]
+            W2["⚡ 16个ML模型<br/>(RF/XGBoost/LSTM/GNN等)"]
+        end
+    end
+
+    subgraph Database["数据层 · SQLite"]
+        DB1["📦 stocks.db<br/>(5800只股票主数据)"]
+        DB2["📜 yaodi_l1_cache<br/>(L1候选池300只)"]
+        DB3["📜 yaodi_l2_cache<br/>(L2精排池50只)"]
+        DB4["📜 yaodi_l3_signals<br/>(L3买入信号)"]
+        DB5["📜 ai_ml_model<br/>(ML模型参数)"]
+        DB6["📜 shundi_mock_holdings<br/>(舜帝持仓)"]
+        DB7["📜 shundi_mock_trades<br/>(舜帝交易记录)"]
+        DB8["📜 yaodi_ml_training_history<br/>(训练历史)"]
+        DB9["📜 stock_main_flow<br/>(主力资金流)"]
+        DB10["📜 stock_history<br/>(K线历史)"]
+    end
+
+    subgraph DataSources["外部数据源"]
+        DS1["📡 东方财富<br/>(主力资金/分时)"]
+        DS2["📡 腾讯财经<br/>(实时行情)"]
+        DS3["📡 新浪财经<br/>(指数/资金流)"]
+    end
+
+    F1 & F2 & F3 & F4 & F5 --> API
+    Frontend -->|"HTTP REST / SSE"| Backend
+    API --> DS1 & DS2 & DS3
+    CS --> Y
+    CS --> S
+    CS --> M
+    CS --> E
+    DS --> API
+    Y --> DB2 & DB3 & DB4
+    S --> DB6 & DB7
+    M --> DB5 & DB8
+    M --> W1 --> W2
+    E --> DB5
+    DB2 --> Y
+    DB3 --> Y
+    DB4 --> S
+    DB1 --> DB2 & DB3 & DB9 & DB10
+
+    style Frontend fill:#1f3a5f,color:#e6edf3,stroke:#58a6ff
+    style Backend fill:#1a2e1a,color:#e6edf3,stroke:#3fb950
+    style Engine fill:#1a2e1a,color:#e6edf3,stroke:#3fb950
+    style Scheduler fill:#2d1f00,color:#e6edf3,stroke:#d29922
+    style WorkerLayer fill:#2d1f00,color:#e6edf3,stroke:#d29922
+    style Database fill:#2d1a2d,color:#e6edf3,stroke:#bc8cff
+    style DataSources fill:#3d1a1a,color:#e6edf3,stroke:#f85149
+    style DataLayer fill:#1a2d3d,color:#e6edf3,stroke:#79c0ff
+</div>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    primaryColor: '#1f3a5f',
+    primaryTextColor: '#e6edf3',
+    primaryBorderColor: '#58a6ff',
+    lineColor: '#8b949e',
+    secondaryColor: '#1a2e1a',
+    tertiaryColor: '#161b22',
+    background: '#0d1117',
+    mainBkg: '#161b22',
+    nodeBorder: '#30363d',
+    clusterBkg: '#161b22',
+    clusterBorder: '#30363d',
+    titleColor: '#58a6ff',
+    edgeLabelBackground: '#161b22'
+  },
+  flowchart: { htmlLabels: true, curve: 'basis', rankSpacing: 60, nodeSpacing: 30 },
+  sequence: { diagramMarginX: 20, diagramMarginY: 20, actorMargin: 60, boxMargin: 10, noteMargin: 10 }
+});
+</script>
+</body>
+</html>
